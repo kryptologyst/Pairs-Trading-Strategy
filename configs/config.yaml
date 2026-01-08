@@ -1,0 +1,73 @@
+# Configuration for Pairs Trading Strategy
+
+# Data Configuration
+data:
+  symbols: ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA", "META", "NFLX"]
+  start_date: "2015-01-01"
+  end_date: "2023-12-31"
+  train_start: "2015-01-01"
+  train_end: "2020-12-31"
+  test_start: "2021-01-01"
+  test_end: "2023-12-31"
+  data_source: "yfinance"
+  
+# Feature Engineering
+features:
+  lookback_window: 252  # 1 year of trading days
+  min_cointegration_pvalue: 0.05
+  spread_threshold_multiplier: 1.0  # Standard deviations for entry/exit
+  half_life_window: 60  # Days for half-life calculation
+  
+# Models
+models:
+  baseline:
+    name: "cointegration_baseline"
+    params:
+      entry_threshold: 1.0
+      exit_threshold: 0.5
+      
+  advanced:
+    name: "kalman_filter"
+    params:
+      initial_state_covariance: 1.0
+      process_noise: 0.01
+      measurement_noise: 0.1
+      
+  ml_model:
+    name: "xgboost"
+    params:
+      n_estimators: 100
+      max_depth: 6
+      learning_rate: 0.1
+      subsample: 0.8
+      colsample_bytree: 0.8
+      
+# Backtesting
+backtesting:
+  initial_capital: 100000
+  transaction_cost: 0.001  # 0.1% per trade
+  slippage: 0.0005  # 0.05% slippage
+  max_position_size: 0.1  # 10% of portfolio per position
+  
+# Risk Management
+risk:
+  max_drawdown: 0.15  # 15% maximum drawdown
+  stop_loss: 0.05  # 5% stop loss
+  take_profit: 0.10  # 10% take profit
+  position_sizing: "kelly"  # kelly, fixed, volatility_adjusted
+  
+# Evaluation
+evaluation:
+  benchmark: "SPY"
+  risk_free_rate: 0.02  # 2% annual risk-free rate
+  metrics:
+    - "sharpe_ratio"
+    - "sortino_ratio"
+    - "calmar_ratio"
+    - "max_drawdown"
+    - "hit_rate"
+    - "profit_factor"
+    
+# Reproducibility
+random_state: 42
+device: "auto"  # auto, cpu, cuda, mps
